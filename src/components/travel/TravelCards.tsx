@@ -69,7 +69,7 @@ export function TravelCards() {
       title: step.title,
       subtitle: step.subtitle,
       status: step.time,
-      statusColor: step.type === 'hotel' ? 'green' : 'blue' as const,
+      statusColor: (step.type === 'hotel' ? 'green' : 'blue') as 'green' | 'blue' | 'yellow',
       detail: step.date,
     }))
 
