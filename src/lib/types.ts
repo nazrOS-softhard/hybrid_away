@@ -1,5 +1,6 @@
-
 export type TransportType = 'taxi' | 'flight' | 'train' | 'hotel' | 'transfer'
+
+export type RouteTag = 'recommended' | 'fastest' | 'cheapest' | 'comfortable'
 
 export interface RouteStep {
   id: string
@@ -13,10 +14,20 @@ export interface RouteStep {
 export interface RouteVariant {
   id: string
   label: string
-  tag: 'recommended' | 'fastest' | 'cheapest' | 'comfortable'
+  tag: RouteTag
   duration: number // minutes
   price: number
   steps: TransportType[]
+  stepsDetail: RouteStep[]
+}
+
+export interface GeneratedRoute {
+  from: string
+  to: string
+  fromCoords: [number, number]
+  toCoords: [number, number]
+  waypointCoords: [number, number][]
+  variants: RouteVariant[]
 }
 
 export interface TravelCard {
@@ -29,4 +40,11 @@ export interface TravelCard {
   detail?: string
   hasCamera?: boolean
   imageUrl?: string
+}
+
+export interface GeoSuggestion {
+  name: string
+  displayName: string
+  lat: number
+  lon: number
 }
