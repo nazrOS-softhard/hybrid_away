@@ -1,42 +1,46 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { MapPin, Navigation, Edit2 } from 'lucide-react'
+import { Navigation } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import { useRouteStore } from '@/store/route-store'
 
-// Leaflet грузим только на клиенте (SSR не поддерживает)
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
 
 export function MapPanel() {
-  const [destination] = useState('Токио, Япония')
+  const { route, isLoading, error } = useRouteStore()
 
   return (
     <div className="flex-1 relative overflow-hidden">
-      {/* Карта */}
       <LeafletMap />
 
-      {/* Header overlay */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex items-start justify-between z-[1000] pointer-events-none">
-        <div className="pointer-events-auto">
-          <h2 className="text-white font-semibold text-base drop-shadow-lg">Постройте свой маршрут</h2>
-          <p className="text-[#8B92A5] text-xs mt-1 max-w-[200px] drop-shadow">
-            AI подберёт для вас оптимальный вариант по времени, стоимости и комфорту
-          </p>
-        </div>
-
-        {/* Destination chip */}
-        <div className="pointer-events-auto bg-[#1A1E2A]/90 backdrop-blur border border-[#252B3B] rounded-xl px-3 py-2 flex items-center gap-2">
-          <MapPin size={12} className="text-[#00D4B4]" />
-          <div>
-            <div className="text-[10px] text-[#8B92A5]">Конечная точка</div>
-            <div className="text-sm text-white font-medium">{destination}</div>
-            <div className="text-[10px] text-[#8B92A5]">Tokyo International Airport (HND)</div>
+      {/* Пустое состояние */}
+      {!route && !isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-center">
+            <div className="text-4xl mb-3">✈️</div>
+            <div className="text-[#8B92A5] text-sm">Введите откуда и куда</div>
+            <div className="text-[#4A5168] text-xs mt-1">ИИ построит маршрут за секунды</div>
           </div>
-          <button className="text-[#8B92A5] hover:text-white ml-1">
-            <Edit2 size={12} />
-          </button>
         </div>
-      </div>
+      )}
+
+      {/* Лоадер */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#0D0F14]/60 backdrop-blur-sm z-[500]">
+          <div className="text-center">
+            <div className="w-10 h-10 border-2 border-[#00D4B4] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <div className="text-[#00D4B4] text-sm font-medium">ИИ строит маршрут...</div>
+            <div className="text-[#8B92A5] text-xs mt-1">Анализирую рейсы, цены, время</div>
+          </div>
+        </div>
+      )}
+
+      {/* Ошибка */}
+      {error && (
+        <div className="absolute bottom-16 left-4 right-4 bg-red-500/20 border border-red-500/50 rounded-xl px-4 py-3 z-[500]">
+          <div className="text-red-400 text-sm">{error}</div>
+        </div>
+      )}
 
       {/* Location button */}
       <div className="absolute bottom-4 left-4 z-[1000]">
