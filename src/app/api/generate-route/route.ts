@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
@@ -65,28 +64,29 @@ export async function POST(req: NextRequest) {
 - Если маршрут внутри одного города — только taxi/train, без flight`
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'HTTP-Referer': 'https://hybrid-away.vercel.app',
+        'X-Title': 'Hybrid В Пути',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'anthropic/claude-sonnet-4-5',
         max_tokens: 2000,
         messages: [{ role: 'user', content: prompt }],
       }),
     })
 
     const data = await response.json()
-    const text = data.content?.[0]?.text ?? ''
+    const text = data.choices?.[0]?.message?.content ?? ''
     const clean = text.replace(/```json|```/g, '').trim()
     const parsed = JSON.parse(clean)
 
     return NextResponse.json(parsed)
   } catch (err) {
-    console.error('AI route error:', err)
-    return NextResponse.json({ error: 'Ошибка генерации' }, { status: 500 })
+    console.error('Route generation error:', err)
+    return NextResponse.json({ error: 'Ошибка генерации маршрута' }, { status: 500 })
   }
 }
