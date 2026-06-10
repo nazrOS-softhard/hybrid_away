@@ -63,7 +63,7 @@ export function PlaceInput({ placeholder, value, onChange, onSelect, icon }: Pro
       </div>
 
       {open && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1A1E2A] border border-[#252B3B] rounded-xl overflow-hidden z-[2000] shadow-xl">
+       <div className="fixed mt-1 bg-[#1A1E2A] border border-[#252B3B] rounded-xl overflow-hidden shadow-xl" style={{ zIndex: 99999, width: ref.current?.offsetWidth, top: (ref.current?.getBoundingClientRect().bottom ?? 0) + 4, left: ref.current?.getBoundingClientRect().left ?? 0 }}>
           {suggestions.map((s, i) => (
             <button
               key={i}
