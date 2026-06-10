@@ -10,7 +10,7 @@ const iconMap: Record<TransportType, React.ElementType> = {
   taxi: Car, flight: Plane, train: Car, hotel: Building2, transfer: MapPin,
 }
 
-const statusColorMap = { green: 'text-[#00C48C]', blue: 'text-[#4A9EFF]', yellow: 'text-yellow-400' }
+const statusColorMap: Record<'green' | 'blue' | 'yellow', string> = { green: 'text-[#00C48C]', blue: 'text-[#4A9EFF]', yellow: 'text-yellow-400' }
 
 const bgGradient: Record<TransportType, string> = {
   taxi:     'from-[#0f2027] to-[#141720]',
