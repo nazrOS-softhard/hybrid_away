@@ -3,6 +3,8 @@
 import { Navigation, MapPin, Clock, Trash2 } from 'lucide-react'
 import { useRouteStore } from '@/store/route-store'
 import { formatPrice, formatDuration } from '@/lib/utils'
+import { useEffect } from 'react'
+import { loadRouteHistory } from '@/lib/supabase'
 
 export function RoutesTab() {
   const { routeHistory, setActiveTab, setRoute, addToHistory } = useRouteStore()
