@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -63,7 +62,16 @@ export function PlaceInput({ placeholder, value, onChange, onSelect, icon }: Pro
       </div>
 
       {open && suggestions.length > 0 && (
-      <div className="fixed mt-1 bg-[#1A1E2A] border border-[#252B3B] rounded-xl overflow-hidden shadow-2xl" style={{ zIndex: 99999, width: ref.current?.offsetWidth ?? 300, top: (ref.current?.getBoundingClientRect().bottom ?? 0) + 4, left: ref.current?.getBoundingClientRect().left ?? 0 }}>
+        <div 
+          className="fixed mt-1 bg-[#1A1E2A] border border-[#252B3B] rounded-xl overflow-hidden shadow-2xl" 
+          style={{ 
+            zIndex: 99999, 
+            width: ref.current?.offsetWidth ?? 300, 
+            top: (ref.current?.getBoundingClientRect().bottom ?? 0) + 4, 
+            left: ref.current?.getBoundingClientRect().left ?? 0 
+          }}
+        >
+          {suggestions.map((s, i) => (
             <button
               key={i}
               onClick={() => { onSelect(s); setOpen(false) }}
