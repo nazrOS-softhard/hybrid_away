@@ -5,7 +5,15 @@ import { useRouteStore } from '@/store/route-store'
 import { formatPrice, formatDuration } from '@/lib/utils'
 
 export function RoutesTab() {
-  const { routeHistory, setActiveTab, setRoute } = useRouteStore()
+  const { routeHistory, setActiveTab, setRoute, addToHistory } = useRouteStore()
+
+  useEffect(() => {
+    if (routeHistory.length === 0) {
+      loadRouteHistory().then(routes => {
+        routes.forEach(r => addToHistory(r))
+      })
+    }
+  }, [])
 
   if (routeHistory.length === 0) {
     return (
