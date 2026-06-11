@@ -31,3 +31,11 @@ export async function getRecentRoutes() {
     .limit(10)
   return data ?? []
 }
+export async function loadRouteHistory() {
+  const { data } = await supabase
+    .from('routes')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20)
+  return (data ?? []).map((row: any) => row.route_data)
+}
