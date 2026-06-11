@@ -48,7 +48,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className="flex items-center gap-2 p-3 bg-[#0D0F14]/80 backdrop-blur border-b border-[#252B3B]">
+    <div className="flex items-center gap-2 p-3 bg-[#0D0F14]/80 backdrop-blur border-b border-[#252B3B]" style={{ position: 'relative', zIndex: 10000 }}>
       <PlaceInput
         placeholder="Откуда"
         value={fromQuery}
