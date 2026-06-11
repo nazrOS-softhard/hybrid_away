@@ -31,6 +31,7 @@ export function SearchBar() {
         [toPlace.lat, toPlace.lon],
       )
       setRoute(route)
+useRouteStore.getState().addToHistory(route)
 
       // Сохраняем в Supabase асинхронно
       saveRoute({
