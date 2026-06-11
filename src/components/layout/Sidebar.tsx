@@ -1,29 +1,30 @@
-
 'use client'
 
 import { Map, Navigation, Briefcase, Calendar, Bell, Camera, HelpCircle, Settings, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useRouteStore } from '@/store/route-store'
 
 const navItems = [
-  { icon: Map, label: 'Главная', active: true },
-  { icon: Navigation, label: 'Маршруты' },
-  { icon: Briefcase, label: 'Мои поездки' },
-  { icon: Calendar, label: 'Бронирования' },
-  { icon: Bell, label: 'Уведомления' },
-  { icon: Camera, label: 'Камеры' },
-  { icon: HelpCircle, label: 'Поддержка' },
-  { icon: Settings, label: 'Настройки' },
-]
+  { icon: Map,         label: 'Главная',       tab: 'home' },
+  { icon: Navigation,  label: 'Маршруты',      tab: 'routes' },
+  { icon: Briefcase,   label: 'Мои поездки',   tab: 'trips' },
+  { icon: Calendar,    label: 'Бронирования',  tab: 'bookings' },
+  { icon: Bell,        label: 'Уведомления',   tab: 'notifications' },
+  { icon: Camera,      label: 'Камеры',        tab: 'cameras' },
+  { icon: HelpCircle,  label: 'Поддержка',     tab: 'support' },
+  { icon: Settings,    label: 'Настройки',     tab: 'settings' },
+] as const
 
 export function Sidebar() {
+  const { activeTab, setActiveTab, notifications } = useRouteStore()
+  const unread = notifications.filter(n => !n.read).length
+
   return (
     <aside className="w-[200px] flex-shrink-0 flex flex-col bg-[#0D0F14] border-r border-[#252B3B]">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[#252B3B]">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#00D4B4] flex items-center justify-center font-bold text-black text-sm">
-            H
-          </div>
+          <div className="w-8 h-8 rounded-lg bg-[#00D4B4] flex items-center justify-center font-bold text-black text-sm">H</div>
           <div className="leading-tight">
             <div className="text-white font-semibold text-sm tracking-wide">HYBRID</div>
             <div className="text-[#8B92A5] text-xs">В ПУТИ</div>
@@ -35,16 +36,22 @@ export function Sidebar() {
       <nav className="flex-1 py-4 overflow-y-auto">
         {navItems.map((item) => (
           <button
-            key={item.label}
+            key={item.tab}
+            onClick={() => setActiveTab(item.tab)}
             className={cn(
-              'w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors',
-              item.active
+              'w-full flex items-center gap-3 px-5 py-2.5 text-sm transition-colors relative',
+              activeTab === item.tab
                 ? 'text-white bg-[#1A1E2A] border-r-2 border-[#00D4B4]'
                 : 'text-[#8B92A5] hover:text-white hover:bg-[#141720]'
             )}
           >
             <item.icon size={16} />
             {item.label}
+            {item.tab === 'notifications' && unread > 0 && (
+              <span className="ml-auto w-4 h-4 rounded-full bg-[#FF4B6E] text-white text-[9px] flex items-center justify-center font-bold">
+                {unread}
+              </span>
+            )}
           </button>
         ))}
       </nav>
