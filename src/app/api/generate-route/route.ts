@@ -166,3 +166,4 @@ ${realDataBlock}
     console.error('Route error:', err?.message ?? err)
     return NextResponse.json({ error: 'Ошибка генерации маршрута', detail: String(err) }, { status: 500 })
   }
+  }
