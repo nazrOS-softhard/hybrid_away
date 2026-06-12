@@ -1,20 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  const { from, to, fromCoords, toCoords } = await req.json()
+  const { from, to, fromCoords, toCoords, departDateStr, realFlights, realTaxiDistance } = await req.json()
 
-  const today = new Date()
-  const depDate = new Date(today)
-  depDate.setDate(today.getDate() + 3)
+  const depDate = new Date(departDateStr)
   const dep = depDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+
+  // Блок реальных данных для промпта
+  let realDataBlock = ''
+
+  if (realFlights?.length > 0) {
+    realDataBlock += `\nРЕАЛЬНЫЕ РЕЙСЫ (используй эти точные данные, не выдумывай):\n`
+    realFlights.forEach((f: any, i: number) => {
+      realDataBlock += `${i + 1}. ${f.flightNumber} | ${f.origin}→${f.destination} | цена ${f.price} ₽ | вылет ${f.departureAt} | пересадок: ${f.transfers} | длительность ${f.duration} мин\n`
+    })
+  } else {
+    realDataBlock += `\nРеальные рейсы не найдены — сгенерируй реалистичные номера рейсов и цены сам.\n`
+  }
+
+  if (realTaxiDistance?.available) {
+    realDataBlock += `\nРЕАЛЬНОЕ РАССТОЯНИЕ НА АВТО: ${realTaxiDistance.distanceKm} км, время в пути: ${realTaxiDistance.durationMin} мин (используй эти точные значения для шага такси).\n`
+  }
 
   const prompt = `Ты — система планирования маршрутов. Построй реалистичный маршрут из "${from}" в "${to}".
 
 Координаты отправления: [${fromCoords[0]}, ${fromCoords[1]}]
 Координаты назначения: [${toCoords[0]}, ${toCoords[1]}]
 Дата вылета: ${dep}
+${realDataBlock}
 
-Верни ТОЛЬКО валидный JSON без markdown, без комментариев:
+Верни ТОЛЬКО валидный JSON без markdown:
 {
   "from": "${from}",
   "to": "${to}",
@@ -43,25 +58,16 @@ export async function POST(req: NextRequest) {
         },
         {
           "id": "2",
-          "type": "transfer",
-          "title": "Регистрация и посадка",
-          "subtitle": "Аэропорт отправления",
-          "time": "07:30",
-          "date": "${dep}",
-          "duration": "1 ч"
-        },
-        {
-          "id": "3",
           "type": "flight",
-          "title": "Рейс [АВИАКОМПАНИЯ] [ОТКУДА]—[КУДА]",
-          "subtitle": "[АВИАКОМПАНИЯ]",
+          "title": "Рейс [используй реальный номер если есть]",
+          "subtitle": "[Авиакомпания]",
           "time": "08:30",
           "date": "${dep}",
           "flightNumber": "SU 262",
           "duration": "9 ч 30 мин"
         },
         {
-          "id": "4",
+          "id": "3",
           "type": "taxi",
           "title": "Такси до отеля",
           "subtitle": "Аэропорт прибытия → Отель",
@@ -70,9 +76,9 @@ export async function POST(req: NextRequest) {
           "duration": "40 мин"
         },
         {
-          "id": "5",
+          "id": "4",
           "type": "hotel",
-          "title": "Отель [РЕАЛИСТИЧНОЕ НАЗВАНИЕ]",
+          "title": "Отель [реалистичное название]",
           "subtitle": "Заселение · 1 ночь",
           "time": "21:00",
           "date": "дата прибытия",
@@ -101,13 +107,12 @@ export async function POST(req: NextRequest) {
   ]
 }
 
-Правила:
-- Используй реальные коды аэропортов (SVO, DME, ARH, HND, NRT и т.д.)
-- Номера рейсов реалистичные: SU (Аэрофлот), DP (Победа), S7, U6 (Уральские)
-- Если маршрут через Москву — добавь пересадку отдельным шагом
-- Время реалистичное с учётом часовых поясов
-- Цены в рублях, реалистичные для 2024 года
-- waypointCoords — промежуточные аэропорты`
+ВАЖНЫЕ ПРАВИЛА:
+- Если предоставлены РЕАЛЬНЫЕ РЕЙСЫ — используй ИХ точные номера, цены и время для варианта "recommended". Не придумывай свои.
+- Если предоставлено РЕАЛЬНОЕ РАССТОЯНИЕ для такси — используй именно это время в пути (duration) для шага такси.
+- Если реальных данных нет — сгенерируй разумные значения сам (коды SVO, DME, ARH, номера SU/DP/U6).
+- Цены в рублях.
+- waypointCoords — промежуточные аэропорты пересадок.`
 
   try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
