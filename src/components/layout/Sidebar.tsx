@@ -20,7 +20,7 @@ export function Sidebar() {
   const unread = notifications.filter(n => !n.read).length
 
   return (
-    <aside className="w-[200px] flex-shrink-0 flex flex-col bg-[#0D0F14] border-r border-[#252B3B]">
+  <aside className="w-[200px] flex-shrink-0 flex flex-col bg-[#0D0F14] border-r border-[#252B3B]" style={{ position: 'relative', zIndex: 20000 }}>
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[#252B3B]">
         <div className="flex items-center gap-2">
