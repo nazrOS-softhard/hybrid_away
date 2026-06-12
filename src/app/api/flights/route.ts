@@ -54,3 +54,4 @@ export async function POST(req: NextRequest) {
     console.error('Flights API error:', err)
     return NextResponse.json({ flights: [], available: false })
   }
+}
