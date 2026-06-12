@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
   url.searchParams.set('destination', destination)
   url.searchParams.set('departure_at', departDate) // YYYY-MM-DD
   url.searchParams.set('currency', 'rub')
-  url.searchParams.set('token', process.env.TRAVELPAYOUTS_TOKEN!)
+ url.searchParams.set('token', process.env.TRAVELPAYOUTS_TOKEN!)
+  url.searchParams.set('marker', process.env.TRAVELPAYOUTS_MARKER!)
   url.searchParams.set('limit', '5')
   url.searchParams.set('sorting', 'price')
 
