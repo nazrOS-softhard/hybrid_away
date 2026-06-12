@@ -130,13 +130,39 @@ ${realDataBlock}
       }),
     })
 
-    const data = await response.json()
+    const rawText = await response.text()
+
+    if (!response.ok) {
+      console.error('OpenRouter HTTP error', response.status, rawText.slice(0, 1000))
+      return NextResponse.json({ error: 'OpenRouter error', status: response.status, detail: rawText }, { status: 500 })
+    }
+
+    let data: any
+    try {
+      data = JSON.parse(rawText)
+    } catch {
+      console.error('OpenRouter non-JSON response', rawText.slice(0, 1000))
+      return NextResponse.json({ error: 'Non-JSON response from OpenRouter', detail: rawText.slice(0, 500) }, { status: 500 })
+    }
+
     const text = data.choices?.[0]?.message?.content ?? ''
+    if (!text) {
+      console.error('OpenRouter empty content', JSON.stringify(data).slice(0, 1000))
+      return NextResponse.json({ error: 'Empty content from AI', raw: data }, { status: 500 })
+    }
+
     const clean = text.replace(/```json|```/g, '').trim()
-    const parsed = JSON.parse(clean)
+
+    let parsed: any
+    try {
+      parsed = JSON.parse(clean)
+    } catch {
+      console.error('Failed to parse AI JSON', clean.slice(0, 1000))
+      return NextResponse.json({ error: 'AI returned invalid JSON', detail: clean.slice(0, 500) }, { status: 500 })
+    }
+
     return NextResponse.json(parsed)
-  } catch (err) {
-    console.error('Route error:', err)
-    return NextResponse.json({ error: 'Ошибка генерации маршрута' }, { status: 500 })
+  } catch (err: any) {
+    console.error('Route error:', err?.message ?? err)
+    return NextResponse.json({ error: 'Ошибка генерации маршрута', detail: String(err) }, { status: 500 })
   }
-}
