@@ -121,7 +121,7 @@ ${realDataBlock}
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'HTTP-Referer': 'https://hybrid-away.vercel.app',
-        'X-Title': 'Hybrid В Пути',
+        'X-Title': 'Hybrid V Puti',
       },
       body: JSON.stringify({
         model: 'anthropic/claude-sonnet-4-5',
