@@ -22,9 +22,16 @@ export async function POST(req: NextRequest) {
   url.searchParams.set('limit', '5')
   url.searchParams.set('sorting', 'price')
 
-  try {
+ try {
     const res = await fetch(url.toString())
-    const data = await res.json()
+    const rawText = await res.text()
+
+    if (!res.ok) {
+      console.error('Travelpayouts HTTP error', res.status, rawText.slice(0, 300))
+      return NextResponse.json({ flights: [], available: false })
+    }
+
+    const data = JSON.parse(rawText)
 
     if (!data.success || !data.data?.length) {
       return NextResponse.json({ flights: [], available: false })
@@ -47,4 +54,3 @@ export async function POST(req: NextRequest) {
     console.error('Flights API error:', err)
     return NextResponse.json({ flights: [], available: false })
   }
-}
